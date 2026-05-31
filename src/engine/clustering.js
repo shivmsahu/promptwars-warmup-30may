@@ -9,10 +9,20 @@
 export function clusterPOIs(pois, distanceMatrix, days = 3, weather = []) {
   if (!pois || pois.length === 0) return [];
 
-  // Determine if a POI is primary outdoor or indoor
+  const categoryKey = (poi) => (poi.category || 'poi').toLowerCase();
+
   const isOutdoorPOI = (poi) => {
-    const cat = (poi.category || '').toLowerCase();
-    return cat.includes('park') || cat.includes('attraction') || cat.includes('monument') || cat.includes('historic');
+    const cat = categoryKey(poi);
+    return ['park', 'garden', 'attraction', 'monument', 'memorial', 'castle', 'viewpoint', 'theme_park'].includes(cat)
+      || cat.includes('historic');
+  };
+
+  const categoryPenaltyForCluster = (cluster, poi) => {
+    const cat = categoryKey(poi);
+    const sameCategoryCount = cluster.filter((item) => categoryKey(item) === cat).length;
+    if (sameCategoryCount === 0) return 0;
+    if (sameCategoryCount === 1) return 900;
+    return sameCategoryCount * 1800;
   };
 
   // Determine which days have inclement weather (WMO weather codes >= 51 mean rain/snow/thunderstorm)
@@ -92,7 +102,7 @@ export function clusterPOIs(pois, distanceMatrix, days = 3, weather = []) {
         weatherPenalty = 1800;
       }
       
-      const totalScore = dist + sizePenalty + weatherPenalty;
+      const totalScore = dist + sizePenalty + weatherPenalty + categoryPenaltyForCluster(clusters[i], poi);
       
       if (totalScore < minScore) {
         minScore = totalScore;

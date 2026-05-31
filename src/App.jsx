@@ -148,10 +148,9 @@ export default function App() {
       setWeather(weatherData);
 
       setStage('Discovering Local Gems');
-      const rawPois = await fetchPOIs(loc.lat, loc.lon, radiusKm * 1000);
-      if (rawPois.length === 0) throw new Error('No points of interest found in this area. Try increasing search radius.');
+      const topPois = await fetchPOIs(loc.lat, loc.lon, radiusKm * 1000, 15);
+      if (topPois.length === 0) throw new Error('No points of interest found in this area. Try increasing search radius.');
 
-      const topPois = rawPois.slice(0, 15);
       setPois(topPois);
 
       setStage('Calculating Route Matrix');
