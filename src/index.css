@@ -3,46 +3,100 @@
 @tailwind utilities;
 
 @layer base {
-  :root, .dark {
+  :root, [data-theme="dark"] {
     --background: 222 55% 10%;
     --foreground: 222 90% 93%;
-
     --card: 222 38% 15%;
     --card-foreground: 222 90% 93%;
- 
     --popover: 222 38% 15%;
     --popover-foreground: 222 90% 93%;
- 
     --primary: 260 100% 87%;
     --primary-foreground: 265 100% 28%;
- 
     --secondary: 191 90% 63%;
     --secondary-foreground: 189 100% 13%;
- 
-    --muted: 222 25% 25%;
-    --muted-foreground: 265 15% 82%;
- 
+    --muted: 265 15% 82%;
+    --muted-foreground: 265 15% 62%;
     --accent: 258 90% 66%;
     --accent-foreground: 210 40% 98%;
- 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 222 30% 22%;
     --input: 222 30% 22%;
     --ring: 260 100% 87%;
- 
     --radius: 0.75rem;
+
+    --app-bg: #0b1326;
+    --app-text: #dae2fd;
+    --app-muted: rgba(203, 195, 215, 0.7);
+    --app-accent: #d0bcff;
+    --app-surface: rgba(255, 255, 255, 0.03);
+    --app-border: rgba(255, 255, 255, 0.1);
+    --app-card-active: #171f33;
+    --app-card-selected: rgba(139, 92, 246, 0.12);
+    --app-header: rgba(11, 19, 38, 0.3);
+    --app-sidebar: rgba(11, 19, 38, 0.5);
+    --app-input-bg: rgba(30, 41, 59, 0.5);
+    --app-input-text: #dae2fd;
+    --app-range-bg: #2d3449;
+    --app-map-fade: linear-gradient(to right, #0b1326, transparent);
+    --leaflet-bg: #0b1326;
+    --popup-bg: #171f33;
+    --popup-text: #dae2fd;
+    --popup-border: rgba(255, 255, 255, 0.1);
+    --btn-primary-bg: #d0bcff;
+    --btn-primary-text: #3c0091;
+    --btn-primary-hover: #a078ff;
+  }
+
+  [data-theme="light"] {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 189 94% 43%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 215 16% 47%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 262 83% 58%;
+    --radius: 0.75rem;
+
+    --app-bg: #f8fafc;
+    --app-text: #0f172a;
+    --app-muted: rgba(100, 116, 139, 0.9);
+    --app-accent: #7c3aed;
+    --app-surface: rgba(255, 255, 255, 0.85);
+    --app-border: rgba(148, 163, 184, 0.35);
+    --app-card-active: #ffffff;
+    --app-card-selected: rgba(124, 58, 237, 0.08);
+    --app-header: rgba(248, 250, 252, 0.85);
+    --app-sidebar: rgba(255, 255, 255, 0.75);
+    --app-input-bg: rgba(255, 255, 255, 0.9);
+    --app-input-text: #0f172a;
+    --app-range-bg: #e2e8f0;
+    --app-map-fade: linear-gradient(to right, #f8fafc, transparent);
+    --leaflet-bg: #e2e8f0;
+    --popup-bg: #ffffff;
+    --popup-text: #0f172a;
+    --popup-border: rgba(148, 163, 184, 0.4);
+    --btn-primary-bg: #7c3aed;
+    --btn-primary-text: #ffffff;
+    --btn-primary-hover: #6d28d9;
   }
 }
- 
+
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground; }
 }
 
 html, body, #root {
@@ -50,71 +104,168 @@ html, body, #root {
   margin: 0;
   padding: 0;
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: #0b1326;
-  color: #dae2fd;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* Glassmorphism Utilities */
+/* Theme utility classes */
+.theme-bg { background-color: var(--app-bg); color: var(--app-text); }
+.theme-text { color: var(--app-text); }
+.theme-muted { color: var(--app-muted); }
+.theme-accent { color: var(--app-accent); }
+.theme-accent-bg { background-color: color-mix(in srgb, var(--app-accent) 15%, transparent); }
+.theme-border { border-color: var(--app-border); }
+.theme-surface { background: var(--app-surface); }
+.theme-sidebar { background: var(--app-sidebar); }
+.theme-header { background: var(--app-header); }
+.theme-card-active { background: var(--app-card-active); border-color: color-mix(in srgb, var(--app-accent) 30%, transparent); }
+.theme-card-selected { background: var(--app-card-selected); }
+.theme-map-fade { background: var(--app-map-fade); }
+
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--app-surface);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--app-border);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
 .glass-input {
-  background: rgba(30, 41, 59, 0.5);
+  background: var(--app-input-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #dae2fd;
+  border: 1px solid var(--app-border);
+  color: var(--app-input-text);
+  transition: all 0.25s ease;
 }
 
 .glass-input:focus {
-  border-color: hsl(var(--primary));
+  border-color: var(--app-accent);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(208, 188, 255, 0.2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent) 25%, transparent);
 }
 
-/* Custom Scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+.btn-primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--btn-primary-bg) 35%, transparent);
 }
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--btn-primary-hover);
 }
+
+.theme-range { background: var(--app-range-bg); }
+
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(208, 188, 255, 0.2);
+  background: color-mix(in srgb, var(--app-accent) 30%, transparent);
   border-radius: 10px;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(208, 188, 255, 0.4);
-}
 
-/* Leaflet Popup Styling */
+/* Leaflet */
 .leaflet-popup-content-wrapper {
-  background: #171f33 !important;
-  color: #dae2fd !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: var(--popup-bg) !important;
+  color: var(--popup-text) !important;
+  border: 1px solid var(--popup-border) !important;
   border-radius: 12px !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
 }
 
-.leaflet-popup-content {
-  margin: 0 !important;
-  line-height: 1.4 !important;
-}
+.leaflet-popup-content { margin: 0 !important; line-height: 1.4 !important; }
 
 .leaflet-popup-tip {
-  background: #171f33 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  box-shadow: none !important;
+  background: var(--popup-bg) !important;
+  border: 1px solid var(--popup-border) !important;
 }
 
 .leaflet-container {
-  background: #0b1326;
+  background: var(--leaflet-bg);
   font-family: inherit;
+  transition: background 0.4s ease;
 }
 
+.marker-slot {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
 
+.marker-dot {
+  border-radius: 50%;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  transition: box-shadow 0.2s ease, width 0.2s ease, height 0.2s ease;
+}
+
+.marker-dot-selected {
+  animation: marker-glow 1.8s ease-in-out infinite;
+}
+
+@keyframes marker-glow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.15); }
+}
+
+.numbered-marker-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
+
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--app-accent) 40%, transparent); }
+  50% { box-shadow: 0 0 0 6px transparent; }
+}
+
+.animate-fade-in { animation: fade-in 0.45s ease-out both; }
+.animate-slide-up { animation: slide-up 0.55s ease-out both; }
+.animate-slide-down { animation: slide-down 0.35s ease-out both; }
+.animate-bounce-subtle { animation: bounce-subtle 2s ease-in-out infinite; }
+.animate-wiggle { animation: wiggle 0.6s ease-in-out; }
+.animate-pulse-ring { animation: pulse-ring 1.8s ease-in-out infinite; }
+.animate-pulse-slow { animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-spin-slow { animation: spin 8s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in, .animate-slide-up, .animate-slide-down,
+  .animate-bounce-subtle, .animate-wiggle, .animate-pulse-ring,
+  .animate-pulse-slow, .animate-spin-slow, .marker-dot-selected {
+    animation: none !important;
+  }
+}
