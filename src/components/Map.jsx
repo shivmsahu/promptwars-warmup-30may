@@ -86,6 +86,7 @@ export default function Map({
   const map = useRef(null);
   const tileLayerRef = useRef(null);
   const layersRef = useRef(null);
+  const routeLayersRef = useRef([]);
   const markersRef = useRef({});
   const markersMetaRef = useRef({});
   const onMarkerClickRef = useRef(onMarkerClick);
@@ -125,10 +126,31 @@ export default function Map({
   }, []);
 
   useEffect(() => {
-    if (!tileLayerRef.current || !map.current) return;
+    if (!map.current || !mapLoaded) return;
+
     const url = TILE_URLS[theme] || TILE_URLS.dark;
-    tileLayerRef.current.setUrl(url);
-    mapContainer.current?.classList.toggle('map-light', theme === 'light');
+
+    if (tileLayerRef.current) {
+      map.current.removeLayer(tileLayerRef.current);
+    }
+
+    tileLayerRef.current = L.tileLayer(url, {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      subdomains: 'abcd',
+      maxZoom: 20,
+    }).addTo(map.current);
+
+    tileLayerRef.current.bringToBack();
+
+    const container = mapContainer.current;
+    if (container) {
+      container.classList.toggle('map-light', theme === 'light');
+    }
+
+    // Force Leaflet to recalculate layout and reload visible tiles
+    requestAnimationFrame(() => {
+      map.current?.invalidateSize(true);
+    });
   }, [theme, mapLoaded]);
 
   useEffect(() => {
@@ -161,6 +183,9 @@ export default function Map({
     if (!mapLoaded || !map.current || !layersRef.current) return;
 
     layersRef.current.clearLayers();
+    routeLayersRef.current.forEach((layer) => layersRef.current.removeLayer(layer.outline));
+    routeLayersRef.current.forEach((layer) => layersRef.current.removeLayer(layer.route));
+    routeLayersRef.current = [];
     markersRef.current = {};
     markersMetaRef.current = {};
 
@@ -221,7 +246,7 @@ export default function Map({
           const lineOpacity = isHighlighted ? 0.95 : 0.45;
           const outlineOpacity = isHighlighted ? 0.6 : 0.25;
 
-          L.polyline(dayRoute, {
+          const outline = L.polyline(dayRoute, {
             color: isLight ? '#cbd5e1' : '#0b1326',
             weight: 7,
             opacity: outlineOpacity,
@@ -229,13 +254,20 @@ export default function Map({
             lineCap: 'round',
           }).addTo(layersRef.current);
 
-          L.polyline(dayRoute, {
+          const route = L.polyline(dayRoute, {
             color,
             weight: 4,
             opacity: lineOpacity,
             lineJoin: 'round',
             lineCap: 'round',
           }).addTo(layersRef.current);
+
+          routeLayersRef.current.push({
+            outline,
+            route,
+            color,
+            isHighlighted,
+          });
         }
       });
     }
@@ -256,7 +288,37 @@ export default function Map({
       }
     }
     skipNextFitRef.current = false;
-  }, [pois, itineraries, activeDay, mapLoaded, theme]);
+  }, [pois, itineraries, activeDay, mapLoaded]);
+
+  // Refresh popup + route colors on theme change without rebuilding markers
+  useEffect(() => {
+    if (!mapLoaded) return;
+
+    const isLight = theme === 'light';
+
+    Object.entries(markersMetaRef.current).forEach(([key, meta]) => {
+      const marker = markersRef.current[key];
+      if (!marker) return;
+      meta.isLight = isLight;
+      marker.setPopupContent(
+        buildPoiPopup(meta.poi, meta.globalIndex, meta.dayIndex, meta.color, isLight)
+      );
+    });
+
+    routeLayersRef.current.forEach(({ outline, route, color, isHighlighted }) => {
+      const lineOpacity = isHighlighted ? 0.95 : 0.45;
+      const outlineOpacity = isHighlighted ? 0.6 : 0.25;
+      outline.setStyle({
+        color: isLight ? '#cbd5e1' : '#0b1326',
+        opacity: outlineOpacity,
+      });
+      route.setStyle({ color, opacity: lineOpacity });
+    });
+
+    requestAnimationFrame(() => {
+      map.current?.invalidateSize(true);
+    });
+  }, [theme, mapLoaded]);
 
   // Update highlight + popup without rebuilding markers
   useEffect(() => {

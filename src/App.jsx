@@ -305,14 +305,9 @@ export default function App() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary rounded-xl py-3 font-extrabold text-xs uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full btn-primary rounded-xl py-3 font-extrabold text-xs uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60"
             >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="capitalize">{stage}...</span>
-                </>
-              ) : 'Plan My Itinerary'}
+              Plan My Itinerary
             </button>
           </form>
 
@@ -479,11 +474,11 @@ export default function App() {
               </span>
             )}
           </div>
-          <div className="flex items-center gap-4">
+          {/* <div className="flex items-center gap-4">
             <button type="button" onClick={toggleTheme} className="p-2 rounded-full theme-surface border theme-border hover:scale-110 transition-all" title="Toggle theme">
               {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-violet-500" />}
             </button>
-          </div>
+          </div> */}
         </header>
 
         <div className="flex-1 min-h-0 w-full relative">
@@ -502,6 +497,21 @@ export default function App() {
           <div className="absolute inset-y-0 left-0 w-12 theme-map-fade pointer-events-none z-[1]" />
         </div>
       </div>
+
+      {loading && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-md animate-fade-in">
+          <div className="glass-card rounded-2xl px-10 py-8 flex flex-col items-center gap-4 shadow-2xl border theme-border min-w-[260px]">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-violet-500/20 animate-ping" />
+              <Loader2 className="w-12 h-12 animate-spin theme-accent relative" />
+            </div>
+            <div className="text-center space-y-1">
+              <p className="text-sm font-bold theme-accent">Planning your trip</p>
+              <p className="text-xs theme-muted capitalize">{stage}...</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
