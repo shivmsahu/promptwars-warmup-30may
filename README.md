@@ -92,6 +92,40 @@ Open **Settings** in the sidebar to add:
 
 Keys are stored in `localStorage` only; they are never sent to a custom backend.
 
+## Accessibility
+
+- Skip link to jump to the map and itinerary
+- Semantic landmarks: sidebar (`complementary`), map (`main`), labeled forms
+- All controls have visible labels, `aria-*` states, and keyboard focus styles
+- Itinerary stops are real buttons with `aria-pressed` selection state
+- Screen reader live region announces planning progress, errors, and stop selection
+- Loading overlay uses `role="alertdialog"` with labelled status text
+- Respects `prefers-reduced-motion` for animations
+
+## Testing
+
+```bash
+npm test              # run once
+npm run test:watch    # watch mode
+npm run test:coverage # coverage report (90%+ lines/statements/functions)
+```
+
+Vitest + React Testing Library cover utilities, services, the planning engine, and UI components.
+
+### Share links
+
+Trip inputs sync to the URL as you edit the form. Share links add `run=1` so recipients get the same settings and the itinerary plans automatically.
+
+| Param | Meaning |
+|-------|---------|
+| `to` | Destination |
+| `start` | Start date (`YYYY-MM-DD`) |
+| `days` | Trip length (1–5) |
+| `radius` | Search radius in km (2–100) |
+| `run=1` | Auto-plan on load (included in copied share links) |
+
+Example: `/?to=Paris&start=2026-06-01&days=3&radius=5&run=1`
+
 ## Data flow
 
 ```
